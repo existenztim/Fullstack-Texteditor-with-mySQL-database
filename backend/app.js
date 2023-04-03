@@ -1,13 +1,31 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mySql = require('mysql2');
+const cors = require('cors')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+require('dotenv').config();
 
-var app = express();
+let dbHost = process.env.DB_HOST;
+let dbPort = process.env.DB_PORT;
+let dbUser = process.env.DB_USER;
+let dbPassword = process.env.DB_PASSWORD;
+let dbDatabase = process.env.DB_DATABASE;
 
+const app = express();
+// Server: localhost:3306 
+app.locals.con = mySql.createConnection({
+    host: dbHost,
+    port: dbPort,
+    user: dbUser,
+    password: dbPassword,
+    database: dbDatabase
+});
+
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
