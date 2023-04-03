@@ -1,0 +1,4 @@
+// // API ENDPOINTS USER //
+
+// HÄMTA ALLA USERS
+GET http://localhost:3000/users
