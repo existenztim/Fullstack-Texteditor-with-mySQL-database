@@ -1,4 +1,5 @@
 import { init } from "../script.js";
+const documentContainer = document.getElementById("documentContainer");
 let userForm = document.getElementById("userForm");
 let logoutBtnContainer = document.getElementById("logoutBtnContainer");
 let greeting = document.getElementById("userGreeting");
@@ -13,7 +14,10 @@ export const generateLogoutForm = () => {
     logoutUserBtn.addEventListener("click", () => {
         localStorage.removeItem("username");
         localStorage.removeItem("userid");
+        
         greeting.innerText = "You have been logged out."
+        tinymce.remove('#textbox');
+        documentContainer.innerHTML = "";
         
         generateLoginForm();
     });
