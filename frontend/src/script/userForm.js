@@ -1,3 +1,4 @@
+import { init } from "../script.js";
 let userForm = document.getElementById("userForm");
 let logoutBtnContainer = document.getElementById("logoutBtnContainer");
 let greeting = document.getElementById("userGreeting");
@@ -103,10 +104,11 @@ export const generateLoginForm = () => {
                 `;
                 localStorage.setItem("username", data[0].userName); // Sets the username in local storage
                 localStorage.setItem("userid", data[0].id); 
-                generateLogoutForm(); 
+                init();
             } 
             loginEmail.value = "";
             loginPassword.value = "";
+            userForm.innerHTML = "";
         }
         catch(err) {
             console.log(err);
