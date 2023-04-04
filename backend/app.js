@@ -7,6 +7,7 @@ const cors = require('cors')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const documentsRouter = require('./routes/documents');
 require('dotenv').config();
 
 let dbHost = process.env.DB_HOST;
@@ -16,7 +17,6 @@ let dbPassword = process.env.DB_PASSWORD;
 let dbDatabase = process.env.DB_DATABASE;
 
 const app = express();
-// Server: localhost:3306 
 app.locals.con = mySql.createConnection({
     host: dbHost,
     port: dbPort,
@@ -34,5 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/documents', documentsRouter);
 
 module.exports = app;

@@ -42,7 +42,7 @@ router.post('/add', function(req, res, next) {
     } else {
       req.app.locals.con.query(sql, function(err, result){
         if (result) {
-          res.status(201).json(result);
+          res.status(201).json({name: user.name, data: result}); 
         } else if (err) {
           console.error(err);
           res.status(500).json({ msg: err });
@@ -60,11 +60,13 @@ router.post('/login', function (req, res, next) {
   const sql = `SELECT * FROM users WHERE userEmail = '${user.email}'`;
   console.log(user.password);
     req.app.locals.con.query(sql, function(err, result){
-      if (result) {  
+      if (result && result[0]) {  
+        // console.log(result);
         let decryptPassword = CryptoJS.AES.decrypt(result[0].userPassword, "salt key").toString(CryptoJS.enc.Utf8);
         if (decryptPassword === dbPassword){
           res.status(200).json(result);
         } else {
+          console.error(err);
           res.status(401).json({ msg: 'Incorrect email or password' });
         }
       } else {
