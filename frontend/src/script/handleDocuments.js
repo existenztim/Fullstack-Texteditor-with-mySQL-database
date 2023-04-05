@@ -6,7 +6,7 @@ export const initDocumentEditor = () => {
     documentContainer.innerHTML= /*html*/`
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
         <button id="saveDoc" class="submit">Save Document</button>
-        <button id="removeDoc" class="submit">Clear Document</button>
+        <button id="undoDoc" class="submit">Undo</button>
         <div id="storedDoc"></div>
     `
     tinymce.init({
@@ -20,6 +20,17 @@ export const initDocumentEditor = () => {
             })
         }
       });
+
+      //undo content in editor
+      document.getElementById("undoDoc").addEventListener("click", function(){
+        let userName = localStorage.getItem("username");
+        tinymce.get("textbox").setContent("");
+        saveDoc.innerText = "Save Document";
+        greeting.innerHTML = /*html*/` 
+        <p>You are logged in as ${userName}<p>
+        `;
+      });
+      
       fetchDocuments();
       createDocument();
 }
@@ -48,21 +59,39 @@ const printDocuments = (documents) => {
     storedDocuments.innerHTML = documents.map(document => {
         return /*html*/`
         <div id="document-${document.documentName}">
+            
             <h3>${document.documentName}<h3>
             <p>${document.createDate.substring(0,19)}<p>
+            
+            <div id=${document.id}>
             ${document.documentContent}
+            </div>
+
             <div class="btnContainer">
-            <button>Edit</button>
-            <button>Delete</button>
+                <button id="editDoc">Edit</button>
+                <button>Delete</button>
             </div>
         </div>
         `
     }).join('')
 
+    document.addEventListener("click", e => {
+        let saveDoc = document.getElementById("saveDoc");
+        if(e.target.id === "editDoc"){
+            const documentContent = e.target.parentNode.previousElementSibling.innerHTML;
+            console.log(documentContent);
+            tinymce.get("textbox").setContent(documentContent);
+            greeting.innerText = "you are editing a document";
+            saveDoc.innerText = "Save changes";
+        }
+    });
+
 }
 
 const createDocument = () => {
-    const saveDoc = document.getElementById("saveDoc");
+    let saveDoc = document.getElementById("saveDoc");
+    saveDoc.innerText = "Save Document";
+
     let userId = localStorage.getItem("userid");
     saveDoc.addEventListener("click", async() =>{
         let docName = prompt("What would you like to name your document?"); //lazy dev :)
