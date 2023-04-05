@@ -10,7 +10,7 @@ POST http://localhost:3000/users/add
 Content-Type: application/json
 
 {
-  "name": "John Doe",
+  "name": "bamse",
   "email": "johnDoe@mail.com",
   "password": "test"
 }
@@ -22,6 +22,26 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-  "email": "johnDoe@mail.com",
+  "email": "noah@hotmail.com",
   "password": "test"
+}
+
+###
+// HÄMTA USER DOCUMENTS
+POST http://localhost:3000/documents
+Content-Type: application/json
+
+{
+  "userId": "a0715001-37b5-42bd-a6f0-c30a85dc06af"
+}
+
+###
+// SKAPA USER DOCUMENT
+POST http://localhost:3000/documents/add
+Content-Type: application/json
+
+{
+  "name":"document1",
+  "content":"<p>hej</p>",
+  "userId": "a0715001-37b5-42bd-a6f0-c30a85dc06af"
 }
