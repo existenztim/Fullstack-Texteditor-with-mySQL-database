@@ -1,5 +1,6 @@
 let publishedBaseUrl = "http://localhost:3000/"
 let greeting = document.getElementById("userGreeting");
+let userId = localStorage.getItem("userid");
 
 export const initDocumentEditor = () => {
     const documentContainer = document.getElementById("documentContainer");
@@ -23,13 +24,27 @@ export const initDocumentEditor = () => {
       fetchDocuments();
       createDocument();
 }
-const fetchDocuments = ()=> {
-    console.log("try to fetch documents");
+
+const fetchDocuments = async () => {
+    const response = await fetch(`${publishedBaseUrl}documents/`,{
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({userId: userId})
+    });
+    try {
+        const data = await response.json();
+        console.log(data);
+        console.log(response);
+
+    } catch (err) {
+        return console.log(err);
+    }
 }
 
 const createDocument = () => {
     const saveDoc = document.getElementById("saveDoc");
-    let userId = localStorage.getItem("userid");
 
     saveDoc.addEventListener("click", async() =>{
         let docName = prompt("What would you like to name your document?"); //lazy dev :)

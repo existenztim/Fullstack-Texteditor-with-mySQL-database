@@ -28,7 +28,7 @@ Content-Type: application/json
 
 ###
 // HÄMTA USER DOCUMENTS
-GET http://localhost:3000/documents
+POST http://localhost:3000/documents
 Content-Type: application/json
 
 {

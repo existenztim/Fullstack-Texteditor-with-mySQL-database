@@ -6,7 +6,7 @@ const CryptoJS = require('crypto-js');
 const { v4: uuidv4 } = require('uuid');
 
 // GET USER DOCUMENTS
-router.get('/', function(req, res, next) {
+router.post('/', function(req, res, next) {
   const userId = req.body.userId;
 
   req.app.locals.con.connect(function(err){
