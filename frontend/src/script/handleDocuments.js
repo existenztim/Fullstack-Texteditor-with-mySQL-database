@@ -1,6 +1,5 @@
 let publishedBaseUrl = "http://localhost:3000/"
 let greeting = document.getElementById("userGreeting");
-let userId = localStorage.getItem("userid");
 
 export const initDocumentEditor = () => {
     const documentContainer = document.getElementById("documentContainer");
@@ -26,7 +25,8 @@ export const initDocumentEditor = () => {
 }
 
 const fetchDocuments = async () => {
-    const response = await fetch(`${publishedBaseUrl}documents/`,{
+    let userId = localStorage.getItem("userid");
+    const response = await fetch(`${publishedBaseUrl}documents`,{
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -35,8 +35,8 @@ const fetchDocuments = async () => {
     });
     try {
         const data = await response.json();
-        console.log(data);
-        console.log(response);
+        console.log(`${userId}: documents `,data);
+        // console.log(response);
 
     } catch (err) {
         return console.log(err);
