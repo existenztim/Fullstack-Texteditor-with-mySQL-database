@@ -7,13 +7,13 @@ export const initDocumentEditor = () => {
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
         <button id="saveDoc" class="submit">Save Document</button>
         <button id="removeDoc" class="submit">Clear Document</button>
-        <div id="preview"></div>
+        <div id="storedDoc"></div>
     `
     tinymce.init({
       
         selector: "#textbox",
         toolbar: "undo redo | blocks | styleselect | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-  
+        
         setup: function(editor) {
             editor.on("change", function(){
                 editor.save();
@@ -35,12 +35,25 @@ const fetchDocuments = async () => {
     });
     try {
         const data = await response.json();
-        console.log(`${userId}: documents `,data);
-        // console.log(response);
+        printDocuments(data);
 
     } catch (err) {
         return console.log(err);
     }
+}
+
+const printDocuments = (documents) => {
+    const storedDocuments = document.getElementById("storedDoc");
+    console.log("printdocuments:",documents);
+    storedDocuments.innerHTML = documents.map(document => {
+        return /*html*/`
+        <div id="document-${document.documentName}">
+            <h3>${document.documentName}<h3>
+            <p>${document.createDate}<p>
+        </div>
+        `
+    }).join('')
+
 }
 
 const createDocument = () => {
