@@ -49,7 +49,12 @@ const printDocuments = (documents) => {
         return /*html*/`
         <div id="document-${document.documentName}">
             <h3>${document.documentName}<h3>
-            <p>${document.createDate}<p>
+            <p>${document.createDate.substring(0,19)}<p>
+            ${document.documentContent}
+            <div class="btnContainer">
+            <button>Edit</button>
+            <button>Delete</button>
+            </div>
         </div>
         `
     }).join('')
@@ -58,7 +63,7 @@ const printDocuments = (documents) => {
 
 const createDocument = () => {
     const saveDoc = document.getElementById("saveDoc");
-
+    let userId = localStorage.getItem("userid");
     saveDoc.addEventListener("click", async() =>{
         let docName = prompt("What would you like to name your document?"); //lazy dev :)
         const boxContent = document.getElementById("textbox").value;

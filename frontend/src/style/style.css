@@ -77,14 +77,25 @@
   gap: 2rem;
 }
 [id^="document-"] {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   border: 3px solid #1a1a1a;
   border-radius: 5px;
   padding: 1rem;
+  position: relative;
+  background-color: white;
+  padding-bottom: 4rem;
+  color: black;
 }
-
+[id^="document-"] .btnContainer {
+  position: absolute;
+  display: flex;
+  bottom: -1rem;
+  right: 0;
+  margin: 0;
+  background-color: #535bf2;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 1rem;
+ }
 
 button {
   border-radius: 8px;
