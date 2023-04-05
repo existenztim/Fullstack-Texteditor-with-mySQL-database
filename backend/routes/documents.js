@@ -5,13 +5,16 @@ const mysql = require("mysql2");
 const CryptoJS = require('crypto-js');
 const { v4: uuidv4 } = require('uuid');
 
-/* GET users listing. */
+// GET USER DOCUMENTS
 router.get('/', function(req, res, next) {
+  const userId = req.body.userId;
+
   req.app.locals.con.connect(function(err){
     if (err) {
       console.error(err);
     }
-    const sql = "SELECT * FROM `users`";
+  //kolla om userid stämmer, visa endast document som ej är softdeletade
+  const sql = `SELECT * FROM documents WHERE userId = '${userId}' AND deleted = false`; //ändra false till 0?
 
     req.app.locals.con.query(sql, function(err, result){
       if (result) {
@@ -25,14 +28,32 @@ router.get('/', function(req, res, next) {
   })
 });
 
+
+// SKAPA DOCUMENT
+router.post('/add', function (req, res, next) {
+  //if no name was given, add a default name
+  let documentName = req.body.name;
+  if (!documentName) {
+    documentName = 'unnamed document';
+  }
+
+  const document = req.body;
+  const sql = `INSERT INTO documents (documentName, documentContent, userId) VALUES ('${documentName}','${document.content}', '${document.userId}')`;
+
+  req.app.locals.con.query(sql, function(err, result){
+    if (result) {
+      res.status(201).json(result);
+    } else {
+      console.error(err);
+      res.status(500).json({ msg: err });
+    }
+  })
+
+});
+
 // TA BORT DOCUMENT
 
 router.delete('/', function(req, res, next) {
 
-});
-
-// SKAPA DOCUMENT
-router.post('/add', function (req, res, next) {
- 
 });
 module.exports = router;
