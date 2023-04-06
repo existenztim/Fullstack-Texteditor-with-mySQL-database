@@ -6,7 +6,7 @@
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: #242424;
-  
+    scroll-behavior: smooth;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -61,6 +61,10 @@
   margin: 1rem;
  }
 
+ #documentContainer h2{
+  text-align: center;
+ }
+
  #userForm {
   position: absolute;
   top: 50%;
@@ -73,10 +77,12 @@
 #storedDoc {
   display: flex;
   justify-content: space-around;
+  align-items:flex-start;
   flex-wrap: wrap;
   gap: 2rem;
 }
-[id^="document-"] {
+
+[id^="document:"] {
   border: 3px solid #1a1a1a;
   border-radius: 5px;
   padding: 1rem;
@@ -84,8 +90,9 @@
   background-color: white;
   padding-bottom: 4rem;
   color: black;
+ 
 }
-[id^="document-"] .btnContainer {
+[id^="document:"] .btnContainer {
   position: absolute;
   display: flex;
   bottom: -1rem;
@@ -93,7 +100,18 @@
   margin: 0;
   background-color: #535bf2;
   width: 100%;
-  border-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  font-size: 1rem;
+ }
+
+ [id^="document:"] .headerContainer {
+  padding: 1rem;
+  margin: -1rem -1rem;
+  background-color: #535bf2;
+  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   font-size: 1rem;
  }
 

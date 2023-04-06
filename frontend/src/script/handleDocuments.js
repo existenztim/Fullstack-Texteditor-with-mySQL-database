@@ -4,11 +4,14 @@ let greeting = document.getElementById("userGreeting");
 export const initDocumentEditor = () => {
     const documentContainer = document.getElementById("documentContainer");
     documentContainer.innerHTML= /*html*/`
+        <h2 id="editorMode">Create Document</h2>
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
-        <button id="saveDoc" class="submit">Save Document</button>
+        <button id="saveDoc" class="submit">Save a new document</button>
         <button id="undoDoc" class="submit">Undo</button>
+        <h2>Your saved documents:<h2>
         <div id="storedDoc"></div>
     `
+    
     tinymce.init({
       
         selector: "#textbox",
@@ -23,12 +26,9 @@ export const initDocumentEditor = () => {
 
       //undo content in editor
       document.getElementById("undoDoc").addEventListener("click", function(){
-        let userName = localStorage.getItem("username");
         tinymce.get("textbox").setContent("");
-        saveDoc.innerText = "Save Document";
-        greeting.innerHTML = /*html*/` 
-        <p>You are logged in as ${userName}<p>
-        `;
+        saveDoc.innerText = "Save a new document";
+        editorMode.innerText= "Create Document";
       });
       
       fetchDocuments();
@@ -57,11 +57,13 @@ const printDocuments = (documents) => {
     const storedDocuments = document.getElementById("storedDoc");
     storedDocuments.innerHTML = documents.map(document => {
         return /*html*/`
-        <div id="document-${document.documentName}">
+        <div id="document:${document.documentName}">
             
-            <h3>${document.documentName}<h3>
-            <p>${document.createDate.substring(0,19)}<p>
-            
+            <div class="headerContainer">
+                <h3>${document.documentName}<h3>
+                <p>${document.createDate.substring(0,19)}<p>
+            </div>
+
             <div id=${document.id}>
             ${document.documentContent}
             </div>
@@ -80,16 +82,17 @@ const addBtnsEventlistener = () =>{
     //edit btn
     let addEditEvent = document.querySelectorAll('[id$="-editBtn"]');
     addEditEvent.forEach(button => button.addEventListener("click", () => {
-        
         let saveDoc = document.getElementById("saveDoc");
         const documentId = button.getAttribute("data-document-id");
         const documentContent = document.getElementById(documentId).innerHTML; 
-        
+        let parentName = document.getElementById( documentId).parentNode.id;
+        let editorMode = document.getElementById("editorMode");
+
         tinymce.get("textbox").setContent(documentContent);
-        
-        greeting.innerText = "you are editing a document";
+        window.scrollTo(0, document.querySelector("#textbox").offsetTop); //scroll to editor
+        editorMode.innerText= `you are editing a ${parentName}`;
         saveDoc.innerText = "Save changes";
-        createDocument(documentId);
+        //createDocument(documentId); skapa istället en ny funktion som skickar med id, sedan skapar ny knapp
     }))
      //delete btn
      let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
@@ -127,17 +130,12 @@ const addBtnsEventlistener = () =>{
      }))
 }
 
-const createDocument = (crudState) => {
-    let saveDoc = document.getElementById("saveDoc");
-    saveDoc.innerText = "Save Document";
-    //create a new document
-    if (crudState){
-        console.log("update existing document")
-    } else {
+const createDocument = () => {
         let userId = localStorage.getItem("userid");
         saveDoc.addEventListener("click", async() =>{
-            let docName = prompt("What would you like to name your document?"); //lazy dev :)
-            const boxContent = document.getElementById("textbox").value;
+        let docName = prompt("What would you like to name your document?"); //lazy dev :)
+        const boxContent = document.getElementById("textbox").value;
+        try {
 
             let newDocument = {
                 name:  docName,
@@ -145,34 +143,30 @@ const createDocument = (crudState) => {
                 userId: userId
             }
 
-            try {
-                const response = await fetch(`${publishedBaseUrl}documents/add`,{
-                    method:"POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(newDocument)
-                });
+            const response = await fetch(`${publishedBaseUrl}documents/add`,{
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newDocument)
+            });
 
-                const data = await response.json();
+            await response.json();
 
-                if (response.status === 201) {
-                    greeting.innerText = "Document was created";
-                    console.log(data);
-                    console.log(response);
-                }
-
-                else {
-                    greeting.innerText = "Something went wrong :(";
-                }
-            }
-            catch(err) {
-                greeting.innerText = err;
+            if (response.status === 201) {
+                greeting.innerText = "Document was created";
             }
 
-            initDocumentEditor();   
-        }) 
-    }
+            else {
+                greeting.innerText = "Something went wrong :(";
+            }
+        }
+        catch(err) {
+            greeting.innerText = err;
+        }
+        initDocumentEditor();   
+    }) 
+
 }
 
 
