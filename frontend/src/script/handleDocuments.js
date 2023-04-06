@@ -55,7 +55,6 @@ const fetchDocuments = async () => {
 
 const printDocuments = (documents) => {
     const storedDocuments = document.getElementById("storedDoc");
-    console.log("printdocuments:",documents);
     storedDocuments.innerHTML = documents.map(document => {
         return /*html*/`
         <div id="document-${document.documentName}">
@@ -94,11 +93,35 @@ const addBtnsEventlistener = () =>{
     }))
      //delete btn
      let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
-     addDeleteEvent.forEach(button => button.addEventListener("click", () => {
-         
-         const documentId = button.getAttribute("data-document-id");
-         console.log(documentId);    
-         greeting.innerText = `you deleted document with id:${documentId} `;
+     addDeleteEvent.forEach(button => button.addEventListener("click", async() => {
+        const documentId = button.getAttribute("data-document-id");
+        
+        let updateDocument = {
+            id: documentId   
+        }
+
+        try {
+            const response = await fetch(`${publishedBaseUrl}documents/delete`,{
+                method:"PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updateDocument)
+            });
+
+            await response.json();
+
+            if (response.status === 200) {
+                greeting.innerText = `you deleted document with id:${documentId} `;;
+            }
+
+            else {
+                greeting.innerText = "Something went wrong :(";
+            }
+        }
+        catch(err) {
+            greeting.innerText = err;
+        }
 
          initDocumentEditor();   
      }))
