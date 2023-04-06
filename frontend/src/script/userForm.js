@@ -6,7 +6,7 @@ let greeting = document.getElementById("userGreeting");
 let publishedBaseUrl = "http://localhost:3000/"
 
 export const generateLogoutForm = () => {
-    console.log("logged in")
+    //console.log("logged in")
     logoutBtnContainer.innerHTML = /*html*/`
         <button id="logoutUserBtn">Logout</button>
     `
@@ -24,7 +24,7 @@ export const generateLogoutForm = () => {
 }
 
 export const generateLoginForm = () => {
-    console.log("not logged in")
+    //console.log("not logged in")
     logoutBtnContainer.innerHTML = "";
     userForm.innerHTML= /*html*/`
     <p>New user? Create an account!</p>
@@ -106,7 +106,7 @@ export const generateLoginForm = () => {
                 greeting.innerHTML += /*html*/` 
                     <p>You are logged in as ${data[0].userName}<p>
                 `;
-                localStorage.setItem("username", data[0].userName); // Sets the username in local storage
+                localStorage.setItem("username", data[0].userName);
                 localStorage.setItem("userid", data[0].id); 
                 init();
             } 

@@ -22,19 +22,8 @@
   a:hover {
     color: #535bf2;
   }
-  
-  #hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-    margin: 0;
-    overflow-y: hidden;
-}
 
- #headBar {
+  #headBar {
     display: flex;
     align-items: center;
     gap: 2rem;
@@ -43,31 +32,87 @@
     width: 100vw;
     position:fixed;
     border-bottom: 3px solid #1a1a1a;
+    z-index: 99;
+    top: 0;
  }
 
- #userForm {
-  background-color: #646cff;
-  
-  border-radius: 5px;
+  #hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+#app {
+  margin-top: 7rem;
+  width: 90%;
+  max-width: 1500px;
+  min-width: 500px;
 }
 
 
-  button {
-    border-radius: 8px;
-    color: white;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-  }
-  button:hover {
-    border-color: #646cff;
-  }
-  button:focus,
-  button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-  }
+ #documentContainer {
+  min-width: 500px;
+  width: 100%;
+ }
+
+ #documentContainer button{
+  margin: 1rem;
+ }
+
+ #userForm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #646cff;
+  border-radius: 5px;
+}
+
+#storedDoc {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+[id^="document-"] {
+  border: 3px solid #1a1a1a;
+  border-radius: 5px;
+  padding: 1rem;
+  position: relative;
+  background-color: white;
+  padding-bottom: 4rem;
+  color: black;
+}
+[id^="document-"] .btnContainer {
+  position: absolute;
+  display: flex;
+  bottom: -1rem;
+  right: 0;
+  margin: 0;
+  background-color: #535bf2;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 1rem;
+ }
+
+button {
+  border-radius: 8px;
+  color: white;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
