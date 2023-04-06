@@ -55,3 +55,13 @@ Content-Type: application/json
   "id": 7
 }
 //för att"ångra" skriv följande sql query i myAdminPhp: UPDATE documents SET deleted = false WHERE id = '7'
+
+###
+// UPDATE DOCUMENT
+PUT http://localhost:3000/documents/update
+Content-Type: application/json
+
+{
+  "id": 7,
+  "documentContent":"<p>new content!</p>"
+}
