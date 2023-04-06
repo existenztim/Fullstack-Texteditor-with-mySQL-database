@@ -6,12 +6,13 @@ export const initDocumentEditor = () => {
   documentContainer.innerHTML = /*html*/ `
         <h2 id="editorMode" class="centeredH2">Create Document</h2>
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
-        <button id="saveDoc" class="submit">Save a new document</button>
-        <button id="undoDoc" class="submit">Undo</button>
+        <div id="editorBtns">
+          <button id="saveDoc" class="submit">Save a new document</button>
+          <button id="undoDoc" class="submit">Undo</button>
+        </div>
         <h2 class="centeredH2">Your saved documents:<h2>
         <div id="storedDoc" ></div>
     `;
-
   tinymce.init({
     selector: "#textbox",
     toolbar:
@@ -29,6 +30,9 @@ export const initDocumentEditor = () => {
     tinymce.get("textbox").setContent("");
     saveDoc.innerText = "Save a new document";
     editorMode.innerText = "Create Document";
+    if (document.getElementById("updateDoc")) {
+      document.getElementById("updateDoc").remove();
+    }
   });
 
   fetchDocuments();
@@ -88,7 +92,6 @@ const addBtnsEventlistener = () => {
   let addEditEvent = document.querySelectorAll('[id$="-editBtn"]');
   addEditEvent.forEach((button) =>
     button.addEventListener("click", () => {
-      let saveDoc = document.getElementById("saveDoc");
       const documentId = button.getAttribute("data-document-id");
       const documentContent = document.getElementById(documentId).innerHTML;
       let parentName = document.getElementById(documentId).parentNode.id;
@@ -97,13 +100,9 @@ const addBtnsEventlistener = () => {
       tinymce.get("textbox").setContent(documentContent);
       window.scrollTo(0, document.querySelector("#textbox").offsetTop); //scroll to editor
 
-      editorMode.innerText = `you are editing ${parentName}`;
+      editorMode.innerText = `You are editing ${parentName}`;
       editorMode.innerText = editorMode.innerText.replace(/-/g, ": ");
-
-      saveDoc.innerText = `Save changes to ${parentName}`;
-      saveDoc.innerText = saveDoc.innerText.replace(/-/g, ": ");
-      editDocument(documentId);
-      //createDocument(documentId); skapa istället en ny funktion som skickar med id, sedan skapar ny knapp
+      editDocument(documentId, parentName);
     })
   );
   //delete btn
@@ -140,8 +139,19 @@ const addBtnsEventlistener = () => {
     })
   );
 };
-const editDocument = (documentIdToUpdate) => {
-  console.log("id: ", documentIdToUpdate); //namn på dokument behövs ej? lös det på backend sidan
+
+const editDocument = (documentIdToUpdate, documentName) => {
+  if (document.getElementById("updateDoc")) {
+    document.getElementById("updateDoc").remove();
+  }
+  // innerHTML += will remove eventListeners, therefor solution below
+  document
+    .getElementById("editorBtns")
+    .insertAdjacentHTML(
+      "afterbegin",
+      /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
+    );
+  console.log("id: ", documentIdToUpdate);
 };
 
 const createDocument = () => {

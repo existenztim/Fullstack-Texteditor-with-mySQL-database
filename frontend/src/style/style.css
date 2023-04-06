@@ -26,6 +26,8 @@ a:hover {
 #headBar {
   display: flex;
   align-items: center;
+
+  padding: 0 1rem;
   gap: 2rem;
   margin: 0;
   background-color: #646cff;
@@ -34,6 +36,7 @@ a:hover {
   border-bottom: 3px solid #1a1a1a;
   z-index: 99;
   top: 0;
+  left: 0;
 }
 
 #hero {
@@ -47,7 +50,7 @@ a:hover {
 #app {
   margin-top: 7rem;
   width: 90%;
-  max-width: 1500px;
+  max-width: 1700px;
   min-width: 500px;
 }
 
@@ -58,6 +61,10 @@ a:hover {
 
 #documentContainer button {
   margin: 1rem;
+}
+.tox-tinymce {
+  padding: 1rem;
+  background-color: #1a1a1a;
 }
 
 .centeredH2 {
@@ -115,8 +122,8 @@ a:hover {
 
 .contentContainer {
   margin: 1rem 0;
-  max-height: 500px;
-  max-width: 700px;
+  height: 300px;
+  width: 500px;
   overflow: scroll;
 }
 button {
@@ -130,6 +137,11 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+#editorBtns {
+  text-align: center;
+  background-color: #535bf2;
 }
 button:hover {
   border-color: #646cff;
