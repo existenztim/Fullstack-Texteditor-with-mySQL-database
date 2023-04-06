@@ -51,9 +51,19 @@ router.post('/add', function (req, res, next) {
 
 });
 
-// TA BORT DOCUMENT
-
-router.delete('/', function(req, res, next) {
-
+// SOFT DELETE DOCUMENT
+router.put('/delete', function(req, res, next) {
+  let documentId = req.body.id;
+  console.log(documentId);
+  const deleteSql = `UPDATE documents SET deleted = true WHERE id = '${documentId}'`;
+  req.app.locals.con.query(deleteSql, function(err, result){
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      console.error(err);
+      res.status(500).json({ msg: err });
+    }
+  })
 });
+
 module.exports = router;

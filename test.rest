@@ -42,6 +42,16 @@ Content-Type: application/json
 
 {
   "name":"document1",
-  "content":"<p>hej</p>",
-  "userId": "a0715001-37b5-42bd-a6f0-c30a85dc06af"
+  "content":"<h1>hej</h1><p>då</p>",
+  "userId": "b25ca010-e13c-447e-93fe-9cbb130214de"
 }
+
+###
+// SOFT DELETA DOCUMENT
+PUT http://localhost:3000/documents/delete
+Content-Type: application/json
+
+{
+  "id": 7
+}
+//för att"ångra" skriv följande sql query i myAdminPhp: UPDATE documents SET deleted = false WHERE id = '7'

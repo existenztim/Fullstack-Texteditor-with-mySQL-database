@@ -68,68 +68,88 @@ const printDocuments = (documents) => {
             </div>
 
             <div class="btnContainer">
-                <button id="editDoc">Edit</button>
-                <button>Delete</button>
+                <button id="${document.documentName}-editBtn" data-document-id="${document.id}">Edit</button> 
+                <button id="${document.documentName}-deleteBtn" data-document-id="${document.id}">Delete</button> 
             </div>
         </div>
         `
     }).join('')
-
-    document.addEventListener("click", e => {
-        let saveDoc = document.getElementById("saveDoc");
-        if(e.target.id === "editDoc"){
-            const documentContent = e.target.parentNode.previousElementSibling.innerHTML;
-            console.log(documentContent);
-            tinymce.get("textbox").setContent(documentContent);
-            greeting.innerText = "you are editing a document";
-            saveDoc.innerText = "Save changes";
-        }
-    });
-
+    addBtnsEventlistener();
 }
 
-const createDocument = () => {
+const addBtnsEventlistener = () =>{
+    //edit btn
+    let addEditEvent = document.querySelectorAll('[id$="-editBtn"]');
+    addEditEvent.forEach(button => button.addEventListener("click", () => {
+        
+        let saveDoc = document.getElementById("saveDoc");
+        const documentId = button.getAttribute("data-document-id");
+        const documentContent = document.getElementById(documentId).innerHTML; 
+        
+        tinymce.get("textbox").setContent(documentContent);
+        
+        greeting.innerText = "you are editing a document";
+        saveDoc.innerText = "Save changes";
+        createDocument(documentId);
+    }))
+     //delete btn
+     let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
+     addDeleteEvent.forEach(button => button.addEventListener("click", () => {
+         
+         const documentId = button.getAttribute("data-document-id");
+         console.log(documentId);    
+         greeting.innerText = `you deleted document with id:${documentId} `;
+
+         initDocumentEditor();   
+     }))
+}
+
+const createDocument = (crudState) => {
     let saveDoc = document.getElementById("saveDoc");
     saveDoc.innerText = "Save Document";
+    //create a new document
+    if (crudState){
+        console.log("update existing document")
+    } else {
+        let userId = localStorage.getItem("userid");
+        saveDoc.addEventListener("click", async() =>{
+            let docName = prompt("What would you like to name your document?"); //lazy dev :)
+            const boxContent = document.getElementById("textbox").value;
 
-    let userId = localStorage.getItem("userid");
-    saveDoc.addEventListener("click", async() =>{
-        let docName = prompt("What would you like to name your document?"); //lazy dev :)
-        const boxContent = document.getElementById("textbox").value;
-
-        let newDocument = {
-            name:  docName,
-            content: boxContent,
-            userId: userId
-        }
-
-        try {
-            const response = await fetch(`${publishedBaseUrl}documents/add`,{
-                method:"POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newDocument)
-            });
-
-            const data = await response.json();
-
-            if (response.status === 201) {
-                greeting.innerText = "Document was created";
-                console.log(data);
-                console.log(response);
+            let newDocument = {
+                name:  docName,
+                content: boxContent,
+                userId: userId
             }
 
-            else {
-                greeting.innerText = "Something went wrong :(";
-            }
-        }
-        catch(err) {
-            greeting.innerText = err;
-        }
+            try {
+                const response = await fetch(`${publishedBaseUrl}documents/add`,{
+                    method:"POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newDocument)
+                });
 
-        initDocumentEditor();   
-    }) 
+                const data = await response.json();
+
+                if (response.status === 201) {
+                    greeting.innerText = "Document was created";
+                    console.log(data);
+                    console.log(response);
+                }
+
+                else {
+                    greeting.innerText = "Something went wrong :(";
+                }
+            }
+            catch(err) {
+                greeting.innerText = err;
+            }
+
+            initDocumentEditor();   
+        }) 
+    }
 }
 
 
