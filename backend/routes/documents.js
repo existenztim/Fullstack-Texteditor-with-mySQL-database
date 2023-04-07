@@ -38,8 +38,7 @@ router.post("/add", function (req, res, next) {
   const document = req.body;
 
   //check if name in db already exist
-  const checkNameSql = `SELECT * FROM documents WHERE documentName = '${documentName}' AND deleted = false`;
-
+  const checkNameSql = `SELECT * FROM documents WHERE documentName LIKE '${documentName}%' AND userId = '${document.userId}' AND deleted = false`;
   req.app.locals.con.query(checkNameSql, function (err, result) {
     if (err) {
       console.error(err);
