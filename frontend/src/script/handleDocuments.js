@@ -102,7 +102,7 @@ const addBtnsEventlistener = () => {
 
       editorMode.innerText = `You are editing ${parentName}`;
       editorMode.innerText = editorMode.innerText.replace(/-/g, ": ");
-      editDocument(documentId, parentName);
+      editDocument(documentId, parentName, documentContent, editorMode);
     })
   );
   //delete btn
@@ -140,7 +140,7 @@ const addBtnsEventlistener = () => {
   );
 };
 
-const editDocument = (documentIdToUpdate, documentName) => {
+const editDocument = (documentIdToUpdate, documentName, contentToUpdate) => {
   if (document.getElementById("updateDoc")) {
     document.getElementById("updateDoc").remove();
   }
@@ -151,7 +151,38 @@ const editDocument = (documentIdToUpdate, documentName) => {
       "afterbegin",
       /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
     );
-  console.log("id: ", documentIdToUpdate);
+
+  const updateDoc = document.getElementById("updateDoc");
+  updateDoc.addEventListener("click", async () => {
+    console.log("id: ", documentIdToUpdate);
+
+    try {
+      let updatedDocument = {
+        id: documentIdToUpdate,
+        documentContent: contentToUpdate,
+      };
+
+      const response = await fetch(`${publishedBaseUrl}documents/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedDocument),
+      });
+
+      await response.json();
+
+      if (response.status === 200) {
+        greeting.innerText = "Document was updated";
+      } else {
+        greeting.innerText = "Something went wrong :(";
+      }
+    } catch (err) {
+      greeting.innerText = err;
+    }
+    editorMode.innerText = "Document was succesfully updated!";
+    //initDocumentEditor();
+  });
 };
 
 const createDocument = () => {
