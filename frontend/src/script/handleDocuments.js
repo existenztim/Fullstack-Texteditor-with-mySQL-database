@@ -65,7 +65,7 @@ const printDocuments = (documents) => {
             
             <div class="headerContainer">
                 <h3>${document.documentName}<h3>
-                <p>${document.createDate.substring(0, 19)}<p>
+                <p>Created in: ${document.createDate.substring(0, 10)}<p>
             </div>
 
             <div id=${document.id} class="contentContainer">
@@ -98,11 +98,12 @@ const addBtnsEventlistener = () => {
       let editorMode = document.getElementById("editorMode");
 
       tinymce.get("textbox").setContent(documentContent);
+      //console.log(documentContent);
       window.scrollTo(0, document.querySelector("#textbox").offsetTop); //scroll to editor
 
       editorMode.innerText = `You are editing ${parentName}`;
       editorMode.innerText = editorMode.innerText.replace(/-/g, ": ");
-      editDocument(documentId, parentName, documentContent, editorMode);
+      editDocument(documentId, parentName);
     })
   );
   //delete btn
@@ -140,10 +141,11 @@ const addBtnsEventlistener = () => {
   );
 };
 
-const editDocument = (documentIdToUpdate, documentName, contentToUpdate) => {
+const editDocument = (documentIdToUpdate, documentName) => {
   if (document.getElementById("updateDoc")) {
     document.getElementById("updateDoc").remove();
   }
+
   // innerHTML += will remove eventListeners, therefor solution below
   document
     .getElementById("editorBtns")
@@ -154,12 +156,11 @@ const editDocument = (documentIdToUpdate, documentName, contentToUpdate) => {
 
   const updateDoc = document.getElementById("updateDoc");
   updateDoc.addEventListener("click", async () => {
-    console.log("id: ", documentIdToUpdate);
-
+    let updatedContent = tinymce.get("textbox").getContent();
     try {
       let updatedDocument = {
         id: documentIdToUpdate,
-        documentContent: contentToUpdate,
+        documentContent: updatedContent,
       };
 
       const response = await fetch(`${publishedBaseUrl}documents/update`, {
@@ -181,7 +182,7 @@ const editDocument = (documentIdToUpdate, documentName, contentToUpdate) => {
       greeting.innerText = err;
     }
     editorMode.innerText = "Document was succesfully updated!";
-    //initDocumentEditor();
+    initDocumentEditor();
   });
 };
 
@@ -189,7 +190,7 @@ const createDocument = () => {
   let userId = localStorage.getItem("userid");
   saveDoc.addEventListener("click", async () => {
     let docName = prompt("What would you like to name your document?"); //lazy dev :)
-    const boxContent = document.getElementById("textbox").value;
+    let boxContent = tinymce.get("textbox").getContent();
     try {
       let newDocument = {
         name: docName,
