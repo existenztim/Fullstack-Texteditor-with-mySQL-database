@@ -3,6 +3,7 @@ const documentContainer = document.getElementById("documentContainer");
 let userForm = document.getElementById("userForm");
 let logoutBtnContainer = document.getElementById("logoutBtnContainer");
 let greeting = document.getElementById("userGreeting");
+let editorMode = document.getElementById("editorMode");
 let publishedBaseUrl = "http://localhost:3000/";
 
 export const generateLogoutForm = () => {
@@ -16,6 +17,7 @@ export const generateLogoutForm = () => {
     localStorage.removeItem("userid");
 
     greeting.innerText = "You have been logged out.";
+    editorMode.innerText = "Welcome";
     tinymce.remove("#textbox");
     documentContainer.innerHTML = "";
 
