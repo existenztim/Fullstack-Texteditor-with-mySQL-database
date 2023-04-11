@@ -14,7 +14,7 @@ router.post("/", function (req, res, next) {
       console.error(err);
     }
 
-    const sql = `SELECT * FROM documents WHERE userId = '${userId}' AND deleted = false`;
+    const sql = `SELECT * FROM documents WHERE userId = '${userId}' AND deleted = false ORDER BY createDate DESC`;
 
     req.app.locals.con.query(sql, function (err, result) {
       if (result) {

@@ -1,16 +1,15 @@
 let publishedBaseUrl = "http://localhost:3000/";
-let greeting = document.getElementById("userGreeting");
+let editorMode = document.getElementById("editorMode");
 
 export const initDocumentEditor = () => {
   const documentContainer = document.getElementById("documentContainer");
   documentContainer.innerHTML = /*html*/ `
-        <h2 id="editorMode" class="centeredH2">Create Document</h2>
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
         <div id="editorBtns">
-          <button id="saveDoc" class="submit">Save a new document</button>
+          <button id="saveDoc" class="submit">Save as a new document</button>
           <button id="undoDoc" class="submit">Undo</button>
         </div>
-        <h2 class="centeredH2">Your saved documents:<h2>
+        <h2 id="savedDocH2"class="centeredH2">Your saved documents:</h2>
         <div id="storedDoc" ></div>
     `;
   tinymce.init({
@@ -28,7 +27,7 @@ export const initDocumentEditor = () => {
   //undo content in editor
   document.getElementById("undoDoc").addEventListener("click", function () {
     tinymce.get("textbox").setContent("");
-    saveDoc.innerText = "Save a new document";
+    saveDoc.innerText = "Save as a new document";
     editorMode.innerText = "Create Document";
     if (document.getElementById("updateDoc")) {
       document.getElementById("updateDoc").remove();
@@ -50,6 +49,7 @@ const fetchDocuments = async () => {
   });
   try {
     const data = await response.json();
+    console.log(data);
     printDocuments(data);
   } catch (err) {
     return console.log(err);
@@ -57,6 +57,8 @@ const fetchDocuments = async () => {
 };
 
 const printDocuments = (documents) => {
+  let totDocuments = document.getElementById("savedDocH2");
+  totDocuments.innerHTML = `Your saved documents: (${documents.length} in total)`;
   const storedDocuments = document.getElementById("storedDoc");
   storedDocuments.innerHTML = documents
     .map((document) => {
@@ -95,8 +97,6 @@ const addBtnsEventlistener = () => {
       const documentId = button.getAttribute("data-document-id");
       const documentContent = document.getElementById(documentId).innerHTML;
       let parentName = document.getElementById(documentId).parentNode.id;
-      let editorMode = document.getElementById("editorMode");
-
       tinymce.get("textbox").setContent(documentContent);
       //console.log(documentContent);
       window.scrollTo(0, document.querySelector("#textbox").offsetTop); //scroll to editor
@@ -128,12 +128,12 @@ const addBtnsEventlistener = () => {
         await response.json();
 
         if (response.status === 200) {
-          greeting.innerText = `you deleted document with id:${documentId} `;
+          editorMode.innerText = `you deleted document with id:${documentId} `;
         } else {
-          greeting.innerText = "Something went wrong :(";
+          editorMode.innerText = "Something went wrong :(";
         }
       } catch (err) {
-        greeting.innerText = err;
+        editorMode.innerText = err;
       }
 
       initDocumentEditor();
@@ -174,14 +174,13 @@ const editDocument = (documentIdToUpdate, documentName) => {
       await response.json();
 
       if (response.status === 200) {
-        greeting.innerText = "Document was updated";
+        editorMode.innerText = "Document was succesfully updated!";
       } else {
-        greeting.innerText = "Something went wrong :(";
+        editorMode.innerText = "Document was succesfully updated!";
       }
     } catch (err) {
-      greeting.innerText = err;
+      editorMode.innerText = err;
     }
-    editorMode.innerText = "Document was succesfully updated!";
     initDocumentEditor();
   });
 };
@@ -209,12 +208,12 @@ const createDocument = () => {
       await response.json();
 
       if (response.status === 201) {
-        greeting.innerText = "Document was created";
+        editorMode.innerText = "Document was created";
       } else {
-        greeting.innerText = "Something went wrong :(";
+        editorMode.innerText = "Something went wrong :(";
       }
     } catch (err) {
-      greeting.innerText = err;
+      editorMode.innerText = err;
     }
     initDocumentEditor();
   });
