@@ -12,6 +12,8 @@ export const initDocumentEditor = () => {
         <h2 id="savedDocH2"class="centeredH2">Your saved documents:</h2>
         <div id="storedDoc" ></div>
     `;
+
+  //editorMode.innerText = "Create Document";
   tinymce.init({
     selector: "#textbox",
     toolbar:
@@ -110,10 +112,12 @@ const addBtnsEventlistener = () => {
   let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
   addDeleteEvent.forEach((button) =>
     button.addEventListener("click", async () => {
+      let userId = localStorage.getItem("userid");
       const documentId = button.getAttribute("data-document-id");
 
       let updateDocument = {
         id: documentId,
+        userId: userId,
       };
 
       try {

@@ -52,7 +52,8 @@ PUT http://localhost:3000/documents/delete
 Content-Type: application/json
 
 {
-  "id": 7
+  "id": 48,
+   "userId": "a0715001-37b5-42bd-a6f0-c30a85dc06af"
 }
 //för att"ångra" skriv följande sql query i myAdminPhp: UPDATE documents SET deleted = false WHERE id = '7'
 
