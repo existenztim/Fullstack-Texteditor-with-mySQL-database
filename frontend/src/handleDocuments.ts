@@ -1,8 +1,10 @@
+import tinymce from "tinymce";
+import { Document } from "./models/interfaces";
 let publishedBaseUrl = "http://localhost:3000/";
-let editorMode = document.getElementById("editorMode");
+const editorMode = document.getElementById("editorMode") as HTMLHeadingElement;
 
 export const initDocumentEditor = () => {
-  const documentContainer = document.getElementById("documentContainer");
+  const documentContainer = document.getElementById("documentContainer") as HTMLDivElement;
   documentContainer.innerHTML = /*html*/ `
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
         <div id="editorBtns">
@@ -27,12 +29,20 @@ export const initDocumentEditor = () => {
   });
 
   //undo content in editor
-  document.getElementById("undoDoc").addEventListener("click", function () {
-    tinymce.get("textbox").setContent("");
-    saveDoc.innerText = "Save as a new document";
+  const undoDocBtn = document.getElementById("undoDoc") as HTMLButtonElement;
+  const saveDocBtn = document.getElementById("saveDoc") as HTMLButtonElement;
+
+  undoDocBtn.addEventListener("click", function () {
+    let textboxEditor = tinymce.get("textbox");
+    if (textboxEditor != null) {
+      textboxEditor.setContent("");
+    }
+
+    saveDocBtn.innerText = "Save as a new document";
     editorMode.innerText = "Create Document";
-    if (document.getElementById("updateDoc")) {
-      document.getElementById("updateDoc").remove();
+    const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+    if (updateDocBtn) {
+      updateDocBtn.remove();
     }
   });
 
@@ -51,17 +61,16 @@ const fetchDocuments = async () => {
   });
   try {
     const data = await response.json();
-    console.log(data);
     printDocuments(data);
   } catch (err) {
     return console.log(err);
   }
 };
 
-const printDocuments = (documents) => {
-  let totDocuments = document.getElementById("savedDocH2");
+const printDocuments = (documents: Document[]) => {
+  let totDocuments = document.getElementById("savedDocH2") as HTMLHeadingElement;
   totDocuments.innerHTML = `Your saved documents: (${documents.length} in total)`;
-  const storedDocuments = document.getElementById("storedDoc");
+  const storedDocuments = document.getElementById("storedDoc") as HTMLDivElement;
   storedDocuments.innerHTML = documents
     .map((document) => {
       return /*html*/ `
@@ -77,12 +86,12 @@ const printDocuments = (documents) => {
             </div>
 
             <div class="btnContainer">
-                <button id="${
-                  document.documentName
-                }-editBtn" data-document-id="${document.id}">Edit</button> 
-                <button id="${
-                  document.documentName
-                }-deleteBtn" data-document-id="${document.id}">Delete</button> 
+                <button id="${document.documentName}-editBtn" data-document-id="${
+        document.id
+      }">Edit</button> 
+                <button id="${document.documentName}-deleteBtn" data-document-id="${
+        document.id
+      }">Delete</button> 
             </div>
         </div>
         `;
@@ -96,24 +105,36 @@ const addBtnsEventlistener = () => {
   let addEditEvent = document.querySelectorAll('[id$="-editBtn"]');
   addEditEvent.forEach((button) =>
     button.addEventListener("click", () => {
-      const documentId = button.getAttribute("data-document-id");
-      const documentContent = document.getElementById(documentId).innerHTML;
-      let parentName = document.getElementById(documentId).parentNode.id;
-      tinymce.get("textbox").setContent(documentContent);
-      //console.log(documentContent);
-      window.scrollTo(0, document.querySelector("#textbox").offsetTop); //scroll to editor
+      let documentId: string | null = button.getAttribute("data-document-id");
+      if (documentId) {
+        const documentContent = document.getElementById(documentId)?.innerHTML;
+        let parentElement = document.getElementById(documentId)?.parentElement;
 
-      editorMode.innerText = `You are editing ${parentName}`;
-      editorMode.innerText = editorMode.innerText.replace(/-/g, ": ");
-      editDocument(documentId, parentName);
+        if (parentElement) {
+          let parentName = parentElement.id;
+          let textboxEditor = tinymce.get("textbox");
+
+          if (textboxEditor != null && documentContent) {
+            textboxEditor.setContent(documentContent);
+          }
+
+          //scroll to editor
+          window.scrollTo(0, (document.querySelector("#textbox") as HTMLElement).offsetTop);
+
+          editorMode.innerText = `You are editing ${parentName}`;
+          editorMode.innerText = editorMode.innerText.replace(/-/g, ": ");
+          editDocument(documentId, parentName);
+        }
+      }
     })
   );
+
   //delete btn
   let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
   addDeleteEvent.forEach((button) =>
     button.addEventListener("click", async () => {
-      let userId = localStorage.getItem("userid");
-      const documentId = button.getAttribute("data-document-id");
+      let userId = localStorage.getItem("userid") as string;
+      const documentId = button.getAttribute("data-document-id") as string;
 
       let updateDocument = {
         id: documentId,
@@ -137,7 +158,7 @@ const addBtnsEventlistener = () => {
           editorMode.innerText = "Something went wrong :(";
         }
       } catch (err) {
-        editorMode.innerText = err;
+        editorMode.innerText = String(err);
       }
 
       initDocumentEditor();
@@ -145,22 +166,27 @@ const addBtnsEventlistener = () => {
   );
 };
 
-const editDocument = (documentIdToUpdate, documentName) => {
-  if (document.getElementById("updateDoc")) {
-    document.getElementById("updateDoc").remove();
+const editDocument = (documentIdToUpdate: string, documentName: string) => {
+  const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+  if (updateDocBtn) {
+    updateDocBtn.remove();
   }
 
   // innerHTML += will remove eventListeners, therefor solution below
-  document
-    .getElementById("editorBtns")
-    .insertAdjacentHTML(
-      "afterbegin",
-      /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
-    );
+  const editorBtnsDiv = document.getElementById("editorBtns") as HTMLDivElement;
 
-  const updateDoc = document.getElementById("updateDoc");
+  editorBtnsDiv.insertAdjacentHTML(
+    "afterbegin",
+    /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
+  );
+  let updateDoc = document.getElementById("updateDoc") as HTMLElement;
   updateDoc.addEventListener("click", async () => {
-    let updatedContent = tinymce.get("textbox").getContent();
+    let updatedContent = "";
+    let textboxEditor = tinymce.get("textbox");
+    if (textboxEditor != null) {
+      updatedContent = textboxEditor.getContent();
+    }
+
     try {
       let updatedDocument = {
         id: documentIdToUpdate,
@@ -183,7 +209,7 @@ const editDocument = (documentIdToUpdate, documentName) => {
         editorMode.innerText = "Document was succesfully updated!";
       }
     } catch (err) {
-      editorMode.innerText = err;
+      editorMode.innerText = String(err);
     }
     initDocumentEditor();
   });
@@ -191,13 +217,20 @@ const editDocument = (documentIdToUpdate, documentName) => {
 
 const createDocument = () => {
   let userId = localStorage.getItem("userid");
-  saveDoc.addEventListener("click", async () => {
+  const saveDocBtn = document.getElementById("saveDoc") as HTMLButtonElement;
+  saveDocBtn.addEventListener("click", async () => {
     let docName = prompt("What would you like to name your document?"); //lazy dev :)
-    let boxContent = tinymce.get("textbox").getContent();
+
+    let documentContent = "";
+    let textboxEditor = tinymce.get("textbox");
+    if (textboxEditor != null) {
+      documentContent = textboxEditor.getContent();
+    }
+
     try {
       let newDocument = {
         name: docName,
-        content: boxContent,
+        content: documentContent,
         userId: userId,
       };
 
@@ -217,7 +250,7 @@ const createDocument = () => {
         editorMode.innerText = "Something went wrong :(";
       }
     } catch (err) {
-      editorMode.innerText = err;
+      editorMode.innerText = String(err);
     }
     initDocumentEditor();
   });

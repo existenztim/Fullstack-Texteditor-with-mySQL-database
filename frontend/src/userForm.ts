@@ -1,9 +1,11 @@
-import { init } from "../script.js";
-const documentContainer = document.getElementById("documentContainer");
-let userForm = document.getElementById("userForm");
-let logoutBtnContainer = document.getElementById("logoutBtnContainer");
-let greeting = document.getElementById("userGreeting");
-let editorMode = document.getElementById("editorMode");
+import tinymce from "tinymce";
+import { init } from "./main";
+
+const documentContainer = document.getElementById("documentContainer") as HTMLDivElement;
+let userForm = document.getElementById("userForm") as HTMLDivElement;
+let logoutBtnContainer = document.getElementById("logoutBtnContainer") as HTMLDivElement;
+let greeting = document.getElementById("userGreeting") as HTMLParagraphElement;
+let editorMode = document.getElementById("editorMode") as HTMLHeadingElement;
 let publishedBaseUrl = "http://localhost:3000/";
 
 export const generateLogoutForm = () => {
@@ -11,7 +13,7 @@ export const generateLogoutForm = () => {
   logoutBtnContainer.innerHTML = /*html*/ `
         <button id="logoutUserBtn">Logout</button>
     `;
-  let logoutUserBtn = document.getElementById("logoutUserBtn");
+  let logoutUserBtn = document.getElementById("logoutUserBtn") as HTMLButtonElement;
   logoutUserBtn.addEventListener("click", () => {
     localStorage.removeItem("username");
     localStorage.removeItem("userid");
@@ -43,10 +45,11 @@ export const generateLoginForm = () => {
     `;
 
   //create user
+  const saveUserBtn = document.getElementById("saveUserBtn") as HTMLButtonElement;
   saveUserBtn.addEventListener("click", async () => {
-    let newUserName = document.getElementById("newUserName");
-    let newEmail = document.getElementById("newEmail");
-    let newPassword = document.getElementById("newPassword");
+    let newUserName = document.getElementById("newUserName") as HTMLInputElement;
+    let newEmail = document.getElementById("newEmail") as HTMLInputElement;
+    let newPassword = document.getElementById("newPassword") as HTMLInputElement;
 
     let newUser = {
       name: newUserName.value,
@@ -74,7 +77,7 @@ export const generateLoginForm = () => {
                 `;
       }
     } catch (err) {
-      greeting.innerText = err;
+      greeting.innerText = String(err);
     }
 
     newUserName.value = "";
@@ -83,9 +86,10 @@ export const generateLoginForm = () => {
   });
 
   //login user
+  const loginUserBtn = document.getElementById("loginUserBtn") as HTMLButtonElement;
   loginUserBtn.addEventListener("click", async () => {
-    let loginEmail = document.getElementById("loginEmail");
-    let loginPassword = document.getElementById("loginPassword");
+    let loginEmail = document.getElementById("loginEmail") as HTMLInputElement;
+    let loginPassword = document.getElementById("loginPassword") as HTMLInputElement;
 
     let loginUser = {
       email: loginEmail.value,
@@ -114,8 +118,7 @@ export const generateLoginForm = () => {
       userForm.innerHTML = "";
     } catch (err) {
       console.log(err);
-      greeting.innerText =
-        "failed to login, please check your username or password and try again";
+      greeting.innerText = "failed to login, please check your username or password and try again";
     }
   });
 };
