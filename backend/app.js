@@ -10,11 +10,11 @@ const usersRouter = require("./routes/users");
 const documentsRouter = require("./routes/documents");
 require("dotenv").config();
 
-let dbHost = process.env.DB_HOST;
-let dbPort = process.env.DB_PORT;
-let dbUser = process.env.DB_USER;
-let dbPassword = process.env.DB_PASSWORD;
-let dbDatabase = process.env.DB_DATABASE;
+const dbHost = process.env.DB_HOST;
+const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+const dbDatabase = process.env.DB_DATABASE;
 
 const app = express();
 app.locals.con = mySql.createConnection({
@@ -23,6 +23,15 @@ app.locals.con = mySql.createConnection({
   user: dbUser,
   password: dbPassword,
   database: dbDatabase,
+});
+
+//check connection
+app.locals.con.connect(function (err) {
+  if (err) {
+    console.log("Error connecting to database: " + err);
+  } else {
+    console.log("[Database connection intialized]");
+  }
 });
 
 app.use(cors());
