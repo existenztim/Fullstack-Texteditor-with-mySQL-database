@@ -1,5 +1,6 @@
 import tinymce from "tinymce";
 import { init } from "./main";
+import * as user from "./models/userForm";
 
 const documentContainer = document.getElementById("documentContainer") as HTMLDivElement;
 let userForm = document.getElementById("userForm") as HTMLDivElement;
@@ -9,7 +10,6 @@ let editorMode = document.getElementById("editorMode") as HTMLHeadingElement;
 let publishedBaseUrl = "http://localhost:3000/";
 
 export const generateLogoutForm = () => {
-  //console.log("logged in")
   logoutBtnContainer.innerHTML = /*html*/ `
         <button id="logoutUserBtn">Logout</button>
     `;
@@ -28,7 +28,6 @@ export const generateLogoutForm = () => {
 };
 
 export const generateLoginForm = () => {
-  //console.log("not logged in")
   logoutBtnContainer.innerHTML = "";
   userForm.innerHTML = /*html*/ `
     <p>New user? Create an account!</p>
@@ -51,7 +50,7 @@ export const generateLoginForm = () => {
     let newEmail = document.getElementById("newEmail") as HTMLInputElement;
     let newPassword = document.getElementById("newPassword") as HTMLInputElement;
 
-    let newUser = {
+    let newUser: user.NewUser = {
       name: newUserName.value,
       email: newEmail.value,
       password: newPassword.value,
@@ -91,7 +90,7 @@ export const generateLoginForm = () => {
     let loginEmail = document.getElementById("loginEmail") as HTMLInputElement;
     let loginPassword = document.getElementById("loginPassword") as HTMLInputElement;
 
-    let loginUser = {
+    let loginUser: user.LoginUser = {
       email: loginEmail.value,
       password: loginPassword.value,
     };

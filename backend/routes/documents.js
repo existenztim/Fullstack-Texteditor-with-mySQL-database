@@ -10,9 +10,7 @@ router.post("/", function (req, res, next) {
   //check connection
   req.app.locals.con.connect(function (err) {
     if (err) {
-      console.log(
-        `router.post/documents/ has an error connecting to database: ${err}`
-      );
+      console.log(`router.post/documents/ has an error connecting to database: ${err}`);
     } else {
       //console.log("router.post/documents succesfully connected to database!"); this line us uncommented for cleaner terminal logg
       const userId = req.body.userId;
@@ -35,13 +33,9 @@ router.post("/add", function (req, res, next) {
   //check connection
   req.app.locals.con.connect(function (err) {
     if (err) {
-      console.log(
-        `router.post/documents/add has an error connecting to database: ${err}`
-      );
+      console.log(`router.post/documents/add has an error connecting to database: ${err}`);
     } else {
-      console.log(
-        "router.post/documents/add succesfully connected to database!"
-      );
+      console.log("router.post/documents/add succesfully connected to database!");
       //if no name was given, add a default name
       let documentName = req.body.name;
       if (!documentName) {
@@ -49,7 +43,6 @@ router.post("/add", function (req, res, next) {
       }
 
       const document = req.body;
-
       //check if name in db already exist
       const checkNameSql = `SELECT * FROM documents WHERE documentName LIKE '${documentName}%' AND userId = '${document.userId}' AND deleted = false`;
       req.app.locals.con.query(checkNameSql, function (err, result) {
@@ -82,13 +75,9 @@ router.put("/delete", function (req, res, next) {
   //check connection
   req.app.locals.con.connect(function (err) {
     if (err) {
-      console.log(
-        `router.put/documents/delete has an error connecting to database: ${err}`
-      );
+      console.log(`router.put/documents/delete has an error connecting to database: ${err}`);
     } else {
-      console.log(
-        "router.put/documents/delete succesfully connected to database!"
-      );
+      console.log("router.put/documents/delete succesfully connected to database!");
       const document = req.body;
       const deleteSql = `UPDATE documents SET deleted = true WHERE id = '${document.id}' AND userId = '${document.userId}'`;
       req.app.locals.con.query(deleteSql, function (err, result) {
@@ -108,14 +97,9 @@ router.put("/update", function (req, res, next) {
   //check connection
   req.app.locals.con.connect(function (err) {
     if (err) {
-      console.log(
-        "router.put/documents/update has an error connecting to database: " +
-          err
-      );
+      console.log("router.put/documents/update has an error connecting to database: " + err);
     } else {
-      console.log(
-        "router.put/documents/update succesfully connected to database!"
-      );
+      console.log("router.put/documents/update succesfully connected to database!");
       const document = req.body;
       const updateSql = `UPDATE documents SET documentContent = '${document.documentContent}' WHERE id = '${document.id}'`;
       req.app.locals.con.query(updateSql, function (err, result) {

@@ -1,5 +1,5 @@
 import tinymce from "tinymce";
-import { Document } from "./models/interfaces";
+import * as doc from "./models/handleDocuments";
 let publishedBaseUrl = "http://localhost:3000/";
 const editorMode = document.getElementById("editorMode") as HTMLHeadingElement;
 
@@ -67,7 +67,7 @@ const fetchDocuments = async () => {
   }
 };
 
-const printDocuments = (documents: Document[]) => {
+const printDocuments = (documents: doc.Document[]) => {
   let totDocuments = document.getElementById("savedDocH2") as HTMLHeadingElement;
   totDocuments.innerHTML = `Your saved documents: (${documents.length} in total)`;
   const storedDocuments = document.getElementById("storedDoc") as HTMLDivElement;
@@ -97,11 +97,11 @@ const printDocuments = (documents: Document[]) => {
         `;
     })
     .join("");
-  addBtnsEventlistener();
+  manageEditBtns();
+  manageDeleteBtns();
 };
 
-const addBtnsEventlistener = () => {
-  //edit btn
+const manageEditBtns = () => {
   let addEditEvent = document.querySelectorAll('[id$="-editBtn"]');
   addEditEvent.forEach((button) =>
     button.addEventListener("click", () => {
@@ -128,15 +128,16 @@ const addBtnsEventlistener = () => {
       }
     })
   );
+};
 
-  //delete btn
+const manageDeleteBtns = () => {
   let addDeleteEvent = document.querySelectorAll('[id$="-deleteBtn"]');
   addDeleteEvent.forEach((button) =>
     button.addEventListener("click", async () => {
       let userId = localStorage.getItem("userid") as string;
       const documentId = button.getAttribute("data-document-id") as string;
 
-      let updateDocument = {
+      let deleteDocument: doc.DeleteDocument = {
         id: documentId,
         userId: userId,
       };
@@ -147,7 +148,7 @@ const addBtnsEventlistener = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(updateDocument),
+          body: JSON.stringify(deleteDocument),
         });
 
         await response.json();
@@ -171,10 +172,8 @@ const editDocument = (documentIdToUpdate: string, documentName: string) => {
   if (updateDocBtn) {
     updateDocBtn.remove();
   }
-
-  // innerHTML += will remove eventListeners, therefor solution below
   const editorBtnsDiv = document.getElementById("editorBtns") as HTMLDivElement;
-
+  // innerHTML += will remove eventListeners, therefor solution below
   editorBtnsDiv.insertAdjacentHTML(
     "afterbegin",
     /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
@@ -188,7 +187,7 @@ const editDocument = (documentIdToUpdate: string, documentName: string) => {
     }
 
     try {
-      let updatedDocument = {
+      let updatedDocument: doc.UpdateDocument = {
         id: documentIdToUpdate,
         documentContent: updatedContent,
       };
@@ -216,8 +215,9 @@ const editDocument = (documentIdToUpdate: string, documentName: string) => {
 };
 
 const createDocument = () => {
-  let userId = localStorage.getItem("userid");
+  let userId = localStorage.getItem("userid") as string;
   const saveDocBtn = document.getElementById("saveDoc") as HTMLButtonElement;
+
   saveDocBtn.addEventListener("click", async () => {
     let docName = prompt("What would you like to name your document?"); //lazy dev :)
 
@@ -228,7 +228,7 @@ const createDocument = () => {
     }
 
     try {
-      let newDocument = {
+      let newDocument: doc.NewDocument = {
         name: docName,
         content: documentContent,
         userId: userId,
