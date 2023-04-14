@@ -1,22 +1,26 @@
 import tinymce from "tinymce";
 import * as doc from "./models/handleDocuments";
+import moment from "moment";
 let publishedBaseUrl = "http://localhost:3000/";
+
 const editorMode = document.getElementById("editorMode") as HTMLHeadingElement;
 
 export const initDocumentEditor = () => {
   const documentContainer = document.getElementById("documentContainer") as HTMLDivElement;
   documentContainer.innerHTML = /*html*/ `
         <textarea id="textbox" name="textbox" rows="29" cols="60"></textarea>
-        <div id="editorBtns">
+        <div id ="editorBtns" class="editorBtns">
           <button id="saveDoc" class="submit">Save as a new document</button>
           <button id="undoDoc" class="submit">Undo</button>
         </div>
         <h2 id="savedDocH2"class="centeredH2">Your saved documents:</h2>
-        <button id="docSize">True size toggle</button>
+        <div id ="docBoard" class="editorBtns">
+          <button id="docSize">True size toggle</button>
+        </div>
+      
         <div id="storedDoc" ></div>
     `;
 
-  //editorMode.innerText = "Create Document";
   tinymce.init({
     selector: "#textbox",
     toolbar:
@@ -34,17 +38,19 @@ export const initDocumentEditor = () => {
   const saveDocBtn = document.getElementById("saveDoc") as HTMLButtonElement;
 
   undoDocBtn.addEventListener("click", function () {
-    let textboxEditor = tinymce.get("textbox");
-    if (textboxEditor != null) {
-      textboxEditor.setContent("");
-    }
-
-    saveDocBtn.innerText = "Save as a new document";
-    editorMode.innerText = "Create Document";
-    const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
-    //remove dublicated
-    if (updateDocBtn) {
-      updateDocBtn.remove();
+    let confirmUndo = window.confirm("Do you really want to undo your progress?");
+    if (confirmUndo) {
+      let textboxEditor = tinymce.get("textbox");
+      if (textboxEditor != null) {
+        textboxEditor.setContent("");
+      }
+      saveDocBtn.innerText = "Save as a new document";
+      editorMode.innerText = "Create Document";
+      const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+      //remove dublicated
+      if (updateDocBtn) {
+        updateDocBtn.remove();
+      }
     }
   });
 
@@ -81,8 +87,12 @@ const printDocuments = (documents: doc.Document[]) => {
             
             <div class="headerContainer">
                 <h3>${document.documentName}</h3>
-                <p>Created in: ${document.createDate.substring(0, 10)}</p>
-                <p>last updated: ${document.createDate}</p>
+                <p>Created: ${moment(document.createDate).format("YYYY-MM-DD HH:mm:ss")}</p>
+                <p>Last updated: ${
+                  document.updatedDate
+                    ? moment(document.updatedDate).format("YYYY-MM-DD HH:mm:ss")
+                    : "-"
+                }</p>
             </div>
 
             <div id=${document.id} class="contentContainer">
@@ -111,9 +121,13 @@ const sizeToggle = () => {
   const docSize = document.getElementById("docSize") as HTMLButtonElement;
   const allDocs = document.querySelectorAll(".contentContainer");
   docSize.addEventListener("click", () => {
-    allDocs.forEach((doc) => {
-      doc.classList.toggle("contentContainer");
-    });
+    if (allDocs.length > 0) {
+      allDocs.forEach((doc) => {
+        doc.classList.toggle("contentContainer");
+      });
+    } else {
+      alert("You have no documents saved to alter.");
+    }
   });
 };
 
@@ -153,68 +167,22 @@ const manageDeleteBtns = () => {
       let userId = localStorage.getItem("userid") as string;
       const documentId = button.getAttribute("data-document-id") as string;
 
-      let deleteDocument: doc.DeleteDocument = {
+      let docToDelete: doc.DeleteDocument = {
         id: documentId,
         userId: userId,
       };
 
-      try {
-        const response = await fetch(`${publishedBaseUrl}documents/delete`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(deleteDocument),
-        });
-
-        await response.json();
-
-        if (response.status === 200) {
-          editorMode.innerText = `you deleted document with id:${documentId} `;
-        } else {
-          editorMode.innerText = "Something went wrong :(";
-        }
-      } catch (err) {
-        editorMode.innerText = String(err);
+      let confirmDelete = window.confirm("Do you really want to delete this document?");
+      if (confirmDelete) {
+        deleteDocument(docToDelete, documentId);
       }
-
-      initDocumentEditor();
     })
   );
 };
 
-const editDocument = (documentIdToUpdate: string, documentName: string) => {
-  const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
-  // remove duplicated
-  if (updateDocBtn) {
-    updateDocBtn.remove();
-  }
-  const editorBtnsDiv = document.getElementById("editorBtns") as HTMLDivElement;
-  // innerHTML += will remove eventListeners, therefor solution below
-  editorBtnsDiv.insertAdjacentHTML(
-    "afterbegin",
-    /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
-  );
-  let updateDoc = document.getElementById("updateDoc") as HTMLElement;
-
-  updateDoc.addEventListener("click", async () => {
-    let updatedContent = "";
-    let textboxEditor = tinymce.get("textbox");
-    if (textboxEditor != null) {
-      updatedContent = textboxEditor.getContent();
-    }
-
-    let docToUpdate: doc.UpdateDocument = {
-      id: documentIdToUpdate,
-      documentContent: updatedContent,
-    };
-    updateDocument(docToUpdate);
-  });
-};
-
-const updateDocument = async (document: doc.UpdateDocument) => {
+const deleteDocument = async (document: doc.DeleteDocument, idToDelete: string) => {
   try {
-    const response = await fetch(`${publishedBaseUrl}documents/update`, {
+    const response = await fetch(`${publishedBaseUrl}documents/delete`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -225,9 +193,9 @@ const updateDocument = async (document: doc.UpdateDocument) => {
     await response.json();
 
     if (response.status === 200) {
-      editorMode.innerText = "Document was succesfully updated!";
+      editorMode.innerText = `you deleted document with id:${idToDelete} `;
     } else {
-      editorMode.innerText = `${response.status}`;
+      editorMode.innerText = "Something went wrong :(";
     }
   } catch (err) {
     editorMode.innerText = String(err);
@@ -272,7 +240,62 @@ const insertDocument = async (document: doc.NewDocument) => {
     if (response.status === 201) {
       editorMode.innerText = "Document was created";
     } else {
-      editorMode.innerText = "Something went wrong :(";
+      editorMode.innerText = `Something went wrong :( : ${response.status}`;
+    }
+  } catch (err) {
+    editorMode.innerText = String(err);
+  }
+  initDocumentEditor();
+};
+
+const editDocument = (documentIdToUpdate: string, documentName: string) => {
+  const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+  // remove duplicated
+  if (updateDocBtn) {
+    updateDocBtn.remove();
+  }
+  const editorBtnsDiv = document.getElementById("editorBtns") as HTMLDivElement;
+  // innerHTML += will remove eventListeners, therefor solution below
+  editorBtnsDiv.insertAdjacentHTML(
+    "afterbegin",
+    /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
+  );
+  let updateDoc = document.getElementById("updateDoc") as HTMLElement;
+
+  updateDoc.addEventListener("click", async () => {
+    let updatedContent = "";
+    let textboxEditor = tinymce.get("textbox");
+    if (textboxEditor != null) {
+      updatedContent = textboxEditor.getContent();
+    }
+
+    let currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
+
+    let docToUpdate: doc.UpdateDocument = {
+      id: documentIdToUpdate,
+      documentContent: updatedContent,
+      updatedDate: currentTime,
+    };
+    updateDocument(docToUpdate);
+  });
+};
+
+const updateDocument = async (document: doc.UpdateDocument) => {
+  try {
+    const response = await fetch(`${publishedBaseUrl}documents/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(document),
+    });
+
+    await response.json();
+
+    if (response.status === 200) {
+      editorMode.innerText = "Document was succesfully updated!";
+    } else {
+      editorMode.innerText = `Something went wrong :( : ${response.status}`;
     }
   } catch (err) {
     editorMode.innerText = String(err);
