@@ -102,7 +102,7 @@ router.put("/update", function (req, res, next) {
       console.log("router.put/documents/update succesfully connected to database!");
       const document = req.body;
       let escContent = connection.escape(document.documentContent);
-      const updateSql = `UPDATE documents SET documentContent = "${escContent}" WHERE id = "${document.id}"`;
+      const updateSql = `UPDATE documents SET documentContent = "${escContent}", updatedDate = "${document.updatedDate}" WHERE id = "${document.id}"`;
       connection.query(updateSql, function (err, result) {
         if (result) {
           res.status(200).json(result);

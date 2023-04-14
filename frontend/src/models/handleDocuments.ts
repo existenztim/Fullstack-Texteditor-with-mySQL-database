@@ -1,6 +1,7 @@
 export interface Document {
   documentName: string;
-  createDate: string; //Date format is handled on the backend
+  createDate: string;
+  updatedDate: string | null;
   documentContent: string;
   id: string;
 }
@@ -19,4 +20,5 @@ export interface DeleteDocument {
 export interface UpdateDocument {
   id: string;
   documentContent: string;
+  updatedDate: string;
 }
