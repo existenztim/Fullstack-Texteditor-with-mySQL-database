@@ -128,6 +128,10 @@ a:hover {
   overflow: scroll;
 }
 
+.headerContainer h3 {
+  text-align: center;
+}
+
 button {
   border-radius: 8px;
   color: white;

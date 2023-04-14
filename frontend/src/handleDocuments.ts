@@ -12,6 +12,7 @@ export const initDocumentEditor = () => {
           <button id="undoDoc" class="submit">Undo</button>
         </div>
         <h2 id="savedDocH2"class="centeredH2">Your saved documents:</h2>
+        <button id="docSize">True size toggle</button>
         <div id="storedDoc" ></div>
     `;
 
@@ -41,6 +42,7 @@ export const initDocumentEditor = () => {
     saveDocBtn.innerText = "Save as a new document";
     editorMode.innerText = "Create Document";
     const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+    //remove dublicated
     if (updateDocBtn) {
       updateDocBtn.remove();
     }
@@ -71,18 +73,20 @@ const printDocuments = (documents: doc.Document[]) => {
   let totDocuments = document.getElementById("savedDocH2") as HTMLHeadingElement;
   totDocuments.innerHTML = `Your saved documents: (${documents.length} in total)`;
   const storedDocuments = document.getElementById("storedDoc") as HTMLDivElement;
+
   storedDocuments.innerHTML = documents
     .map((document) => {
       return /*html*/ `
         <div id="document-${document.documentName}">
             
             <div class="headerContainer">
-                <h3>${document.documentName}<h3>
-                <p>Created in: ${document.createDate.substring(0, 10)}<p>
+                <h3>${document.documentName}</h3>
+                <p>Created in: ${document.createDate.substring(0, 10)}</p>
+                <p>last updated: ${document.createDate}</p>
             </div>
 
             <div id=${document.id} class="contentContainer">
-            ${document.documentContent}
+            ${document.documentContent.replace(/'/g, "")}
             </div>
 
             <div class="btnContainer">
@@ -97,8 +101,20 @@ const printDocuments = (documents: doc.Document[]) => {
         `;
     })
     .join("");
+
   manageEditBtns();
   manageDeleteBtns();
+  sizeToggle();
+};
+
+const sizeToggle = () => {
+  const docSize = document.getElementById("docSize") as HTMLButtonElement;
+  const allDocs = document.querySelectorAll(".contentContainer");
+  docSize.addEventListener("click", () => {
+    allDocs.forEach((doc) => {
+      doc.classList.toggle("contentContainer");
+    });
+  });
 };
 
 const manageEditBtns = () => {
@@ -169,6 +185,7 @@ const manageDeleteBtns = () => {
 
 const editDocument = (documentIdToUpdate: string, documentName: string) => {
   const updateDocBtn: HTMLElement | null = document.getElementById("updateDoc");
+  // remove duplicated
   if (updateDocBtn) {
     updateDocBtn.remove();
   }
@@ -179,6 +196,7 @@ const editDocument = (documentIdToUpdate: string, documentName: string) => {
     /*html */ `<button id="updateDoc" data-document-id="${documentIdToUpdate}" class="submit">update ${documentName}</button>`
   );
   let updateDoc = document.getElementById("updateDoc") as HTMLElement;
+
   updateDoc.addEventListener("click", async () => {
     let updatedContent = "";
     let textboxEditor = tinymce.get("textbox");
@@ -186,32 +204,35 @@ const editDocument = (documentIdToUpdate: string, documentName: string) => {
       updatedContent = textboxEditor.getContent();
     }
 
-    try {
-      let updatedDocument: doc.UpdateDocument = {
-        id: documentIdToUpdate,
-        documentContent: updatedContent,
-      };
-
-      const response = await fetch(`${publishedBaseUrl}documents/update`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedDocument),
-      });
-
-      await response.json();
-
-      if (response.status === 200) {
-        editorMode.innerText = "Document was succesfully updated!";
-      } else {
-        editorMode.innerText = "Document was succesfully updated!";
-      }
-    } catch (err) {
-      editorMode.innerText = String(err);
-    }
-    initDocumentEditor();
+    let docToUpdate: doc.UpdateDocument = {
+      id: documentIdToUpdate,
+      documentContent: updatedContent,
+    };
+    updateDocument(docToUpdate);
   });
+};
+
+const updateDocument = async (document: doc.UpdateDocument) => {
+  try {
+    const response = await fetch(`${publishedBaseUrl}documents/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(document),
+    });
+
+    await response.json();
+
+    if (response.status === 200) {
+      editorMode.innerText = "Document was succesfully updated!";
+    } else {
+      editorMode.innerText = `${response.status}`;
+    }
+  } catch (err) {
+    editorMode.innerText = String(err);
+  }
+  initDocumentEditor();
 };
 
 const createDocument = () => {
@@ -227,31 +248,34 @@ const createDocument = () => {
       documentContent = textboxEditor.getContent();
     }
 
-    try {
-      let newDocument: doc.NewDocument = {
-        name: docName,
-        content: documentContent,
-        userId: userId,
-      };
-
-      const response = await fetch(`${publishedBaseUrl}documents/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newDocument),
-      });
-
-      await response.json();
-
-      if (response.status === 201) {
-        editorMode.innerText = "Document was created";
-      } else {
-        editorMode.innerText = "Something went wrong :(";
-      }
-    } catch (err) {
-      editorMode.innerText = String(err);
-    }
-    initDocumentEditor();
+    let newDocument: doc.NewDocument = {
+      name: docName,
+      content: documentContent,
+      userId: userId,
+    };
+    insertDocument(newDocument);
   });
+};
+
+const insertDocument = async (document: doc.NewDocument) => {
+  try {
+    const response = await fetch(`${publishedBaseUrl}documents/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(document),
+    });
+
+    await response.json();
+
+    if (response.status === 201) {
+      editorMode.innerText = "Document was created";
+    } else {
+      editorMode.innerText = "Something went wrong :(";
+    }
+  } catch (err) {
+    editorMode.innerText = String(err);
+  }
+  initDocumentEditor();
 };

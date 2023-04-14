@@ -42,82 +42,101 @@ export const generateLoginForm = () => {
     <input type="password" id="loginPassword" placeholder="password" />
     <button id="loginUserBtn">Login</button>
     `;
-
-  //create user
+  saveUserEvent();
+  addUserEvent();
+};
+const saveUserEvent = () => {
   const saveUserBtn = document.getElementById("saveUserBtn") as HTMLButtonElement;
+
   saveUserBtn.addEventListener("click", async () => {
     let newUserName = document.getElementById("newUserName") as HTMLInputElement;
     let newEmail = document.getElementById("newEmail") as HTMLInputElement;
     let newPassword = document.getElementById("newPassword") as HTMLInputElement;
 
-    let newUser: user.NewUser = {
+    let userToCreate: user.NewUser = {
       name: newUserName.value,
       email: newEmail.value,
       password: newPassword.value,
     };
-
-    try {
-      const response = await fetch(`${publishedBaseUrl}users/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 409) {
-        greeting.innerText = "Email or name already exist";
-      } else if (data.name) {
-        greeting.innerText = "";
-        greeting.innerHTML += /*html*/ ` 
-                    <p>User ${data.name} was succesfully created!<p>
-                `;
-      }
-    } catch (err) {
-      greeting.innerText = String(err);
-    }
-
-    newUserName.value = "";
-    newEmail.value = "";
-    newPassword.value = "";
+    createUser(userToCreate, newUserName, newEmail, newPassword);
   });
+};
 
-  //login user
+const addUserEvent = () => {
   const loginUserBtn = document.getElementById("loginUserBtn") as HTMLButtonElement;
-  loginUserBtn.addEventListener("click", async () => {
+
+  loginUserBtn.addEventListener("click", () => {
     let loginEmail = document.getElementById("loginEmail") as HTMLInputElement;
     let loginPassword = document.getElementById("loginPassword") as HTMLInputElement;
 
-    let loginUser: user.LoginUser = {
+    let userToLogin: user.LoginUser = {
       email: loginEmail.value,
       password: loginPassword.value,
     };
-    try {
-      const response = await fetch(`${publishedBaseUrl}users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginUser),
-      });
-      const data = await response.json();
-      if (data[0].userName) {
-        greeting.innerText = "";
-        greeting.innerHTML += /*html*/ ` 
-                    <p>You are logged in as ${data[0].userName}<p>
-                `;
-        localStorage.setItem("username", data[0].userName);
-        localStorage.setItem("userid", data[0].id);
-        init();
-      }
-      loginEmail.value = "";
-      loginPassword.value = "";
-      userForm.innerHTML = "";
-    } catch (err) {
-      console.log(err);
-      greeting.innerText = "failed to login, please check your username or password and try again";
-    }
+    loginUser(userToLogin, loginEmail, loginPassword);
   });
+};
+
+const createUser = async (
+  newUser: user.LoginUser,
+  nameInput: HTMLInputElement,
+  emailInput: HTMLInputElement,
+  passwordInput: HTMLInputElement
+) => {
+  try {
+    const response = await fetch(`${publishedBaseUrl}users/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    });
+
+    const data = await response.json();
+
+    if (response.status === 409) {
+      editorMode.innerText = "Email or name already exist";
+    } else if (data.name) {
+      editorMode.innerHTML = /*html*/ ` 
+      <p>User ${data.name} was succesfully created!</p>`;
+    }
+  } catch (err) {
+    greeting.innerText = String(err);
+  }
+
+  nameInput.value = "";
+  emailInput.value = "";
+  passwordInput.value = "";
+};
+
+const loginUser = async (
+  user: user.LoginUser,
+  emailInput: HTMLInputElement,
+  nameInput: HTMLInputElement
+) => {
+  try {
+    const response = await fetch(`${publishedBaseUrl}users/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    const data = await response.json();
+    if (data[0].userName) {
+      greeting.innerText = "";
+      greeting.innerHTML += /*html*/ ` 
+                  <p>You are logged in as ${data[0].userName}</p>
+              `;
+      localStorage.setItem("username", data[0].userName);
+      localStorage.setItem("userid", data[0].id);
+      init();
+    }
+    emailInput.value = "";
+    nameInput.value = "";
+    userForm.innerHTML = "";
+  } catch (err) {
+    console.log(err);
+    editorMode.innerText = "failed to login, please check your username or password and try again";
+  }
 };

@@ -56,7 +56,6 @@ router.post("/add", function (req, res, next) {
           }
           //add the document to the database
           const sql = `INSERT INTO documents (documentName, documentContent, userId) VALUES ("${documentName}","${escContent}", "${document.userId}")`;
-          console.log(sql);
           connection.query(sql, function (err, result) {
             if (result) {
               res.status(201).json(result);
@@ -102,7 +101,8 @@ router.put("/update", function (req, res, next) {
     } else {
       console.log("router.put/documents/update succesfully connected to database!");
       const document = req.body;
-      const updateSql = `UPDATE documents SET documentContent = '${document.documentContent}' WHERE id = '${document.id}'`;
+      let escContent = connection.escape(document.documentContent);
+      const updateSql = `UPDATE documents SET documentContent = "${escContent}" WHERE id = "${document.id}"`;
       connection.query(updateSql, function (err, result) {
         if (result) {
           res.status(200).json(result);

@@ -40,11 +40,8 @@ router.post("/add", function (req, res, next) {
       let encryptPassword = req.body.password;
       encryptPassword = CryptoJS.AES.encrypt(user.password, "salt key").toString();
 
-      let escName = connection.escape(user.name);
-      let escEmail = connection.escape(user.email);
-      //no need to escape(user.password since we encrypt it before sending to db)
-      const checkExists = `SELECT * FROM users WHERE userEmail = "${escEmail}" OR userName = "${escName}"`;
-      const sql = `INSERT INTO users (id, userName, userEmail, userPassword) VALUES ("${userId}","${escName}", "${escEmail}", "${encryptPassword}")`;
+      const checkExists = `SELECT * FROM users WHERE userEmail = '${user.email}' OR userName = '${user.name}'`;
+      const sql = `INSERT INTO users (id, userName, userEmail, userPassword) VALUES ('${userId}','${user.name}', '${user.email}', '${encryptPassword}')`;
 
       //check if user exist
       connection.query(checkExists, function (err, result) {
