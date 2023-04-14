@@ -1,5 +1,0 @@
-DB_HOST="localhost"
-DB_PORT="3306"
-DB_USER="notes-tim-sundell"
-DB_PASSWORD="seton321"
-DB_DATABASE="notes-tim-sundell"
