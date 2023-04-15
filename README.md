@@ -1,6 +1,6 @@
 ﻿# Notes - a texteditor with a local mySql database!
 
-This is a fullstack app that lets you create-edit and delete text documents that are user specific.
+This is a fullstack app that lets you create,read,update and delete text documents that are user specific.
 
 ![demo1](https://user-images.githubusercontent.com/100682425/232146673-95b2ac40-5772-44df-bfbf-a3cc3bc4463a.png)
 ![demo2](https://user-images.githubusercontent.com/100682425/232256191-2713bfc9-c051-492d-bfa0-d13cd5e3f48f.png)
@@ -38,9 +38,9 @@ information you need to login as any of the already existing users:
 
 test@gmail.com with password : test123      (has 1 document created)
 
-demo@gmail.com with password : demo123      (has 3 document created)
+demo@gmail.com with password : demo123      (has 3 documents created)
 
-johnDoe@gmail.com with password : johnDoe   (has 3 document created)
+johnDoe@gmail.com with password : johnDoe   (has 3 documents created)
 
 # Code Stack
 
