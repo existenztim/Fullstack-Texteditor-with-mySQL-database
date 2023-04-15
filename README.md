@@ -33,9 +33,14 @@ Before you follow these steps make sure you have node and git installed on your 
 
 # User password
 
-the passwords of the users are encrypted in the database. So if you want to login as any of the
-existing 3 users in the sql file i have saved you some time, the password for these users are the
-same as their username.
+The passwords of the users are encrypted in the database. So to make life easier for you here are the
+information you need to login as any of the already existing users:
+
+test@gmail.com with password : test123      (has 1 document created)
+
+demo@gmail.com with password : demo123      (has 3 document created)
+
+johnDoe@gmail.com with password : johnDoe   (has 3 document created)
 
 # Code Stack
 
