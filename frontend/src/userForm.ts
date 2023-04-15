@@ -52,13 +52,24 @@ const saveUserEvent = () => {
     let newUserName = document.getElementById("newUserName") as HTMLInputElement;
     let newEmail = document.getElementById("newEmail") as HTMLInputElement;
     let newPassword = document.getElementById("newPassword") as HTMLInputElement;
-
-    let userToCreate: user.NewUser = {
-      name: newUserName.value,
-      email: newEmail.value,
-      password: newPassword.value,
-    };
-    createUser(userToCreate, newUserName, newEmail, newPassword);
+    if (
+      newUserName.value.match(/^[a-zA-Z0-9]{6,20}$/) &&
+      newEmail.value.match(
+        /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      ) &&
+      newPassword.value.match(/^[a-zA-Z0-9]{6,20}$/)
+    ) {
+      let userToCreate: user.NewUser = {
+        name: newUserName.value,
+        email: newEmail.value,
+        password: newPassword.value,
+      };
+      createUser(userToCreate, newUserName, newEmail, newPassword);
+    } else {
+      editorMode.innerText = `1: Username must be between 6-20 characters long and consist of only letters and numbers.
+      2: Email must contain a minimum of one letter, number, or special character before and after the @ symbol.
+      3: Password must be between 6-20 characters long.`;
+    }
   });
 };
 
@@ -114,6 +125,7 @@ const loginUser = async (
   emailInput: HTMLInputElement,
   nameInput: HTMLInputElement
 ) => {
+  editorMode.innerText = "loading data";
   try {
     const response = await fetch(`${publishedBaseUrl}users/login`, {
       method: "POST",
@@ -136,7 +148,7 @@ const loginUser = async (
     nameInput.value = "";
     userForm.innerHTML = "";
   } catch (err) {
-    console.log(err);
+    console.log("failed to login", err);
     editorMode.innerText = "failed to login, please check your username or password and try again";
   }
 };
