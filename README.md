@@ -19,15 +19,15 @@ Before you follow these steps make sure you have node and git installed on your 
 6. Import the notes-tim-sundell.sql (preferably in phpMyAdmin).
 7. Rename the .envtest in the backend folder to .env and replace the variables with your own values
    (e.g. if you need or changed anything).
-8. Now go to your backend folder and type [npm start] in your terminal (if you have nodemon
+8. Start the Apache/MySQL server (e.g. via MAMP).
+9. Now go to your backend folder and type [npm start] in your terminal (if you have nodemon
    installed globally).
-9. If you don't have nodemon installed globally you have two options:
+10. If you don't have nodemon installed globally you have two options:
 
    1. Either install nodemon globally.
    2. Or go to package.json and change the line "start": "nodemon ./bin/www" to: "start": "node
       ./bin/www".
 
-10. Start the Apache/MySQL server (e.g. via MAMP).
 11. Navigate to the frontend folder via the terminal.
 12. Type [npm run dev] and follow the link in the browser. Have fun!
 
