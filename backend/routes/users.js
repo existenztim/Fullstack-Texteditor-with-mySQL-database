@@ -5,24 +5,32 @@ const mysql = require("mysql2");
 const connection = require("./conn");
 const CryptoJS = require("crypto-js");
 const { v4: uuidv4 } = require("uuid");
+require("dotenv").config();
+
+const token = process.env.ADMIN_TOKEN;
 
 // Hämta alla users (admin route)
-router.get("/", function (req, res, next) {
-  connection.connect(function (err) {
-    if (err) {
-      console.error(err);
-    }
-    const sql = "SELECT * FROM `users`";
-
-    connection.query(sql, function (err, result) {
-      if (result) {
-        res.status(200).json(result);
-      } else if (err) {
+router.get("/:token", function (req, res, next) {
+  if (req.params.token === token) {
+    connection.connect(function (err) {
+      if (err) {
         console.error(err);
-        res.status(500).json({ msg: err });
+      } else {
+        const sql = "SELECT * FROM `users`";
+
+        connection.query(sql, function (err, result) {
+          if (result) {
+            res.status(200).json({ authorized: true, result });
+          } else if (err) {
+            console.error(err);
+            res.status(500).json({ msg: err });
+          }
+        });
       }
     });
-  });
+  } else {
+    res.status(401).json({ authorized: false });
+  }
 });
 
 // SKAPA USER
